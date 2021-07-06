@@ -1,7 +1,11 @@
+use teloxide::prelude::*;
+
 use binance::api::*;
 use binance::market::*;
 
-fn get_crypto_price(crypto_name: &str) -> Result<f64, anyhow::Error> {
+// async fn get_updates(url: &str) {}
+
+async fn get_crypto_price(crypto_name: &str) -> Result<f64, anyhow::Error> {
     let market: Market = Binance::new(None, None);
 
     match market.get_price(crypto_name) {
@@ -13,6 +17,16 @@ fn get_crypto_price(crypto_name: &str) -> Result<f64, anyhow::Error> {
     }
 }
 
-fn main() {
-    println!("{:?}", get_crypto_price("NEARUDT"));
+#[tokio::main]
+async fn main() {
+    // teloxide::enable_logging!();
+    // log::info!("Starting binance-notificator-bot...");
+    // let bot = Bot::from_env().auto_send();
+
+    // teloxide::types::InlineKeyboardButton::text("Будильник на понижение");
+
+    match get_crypto_price("NEARUSDT").await {
+        Ok(res) => println!("{}", res),
+        Err(err) => log::info!("{}", err),
+    }
 }
