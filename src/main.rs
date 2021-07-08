@@ -5,16 +5,17 @@ use binance::market::*;
 
 // async fn get_updates(url: &str) {}
 
-async fn get_crypto_price(crypto_name: &str) -> Result<f64, anyhow::Error> {
+async fn get_crypto_price(crypto_name: &'static str) -> Result<f64, anyhow::Error> {
     let market: Market = Binance::new(None, None);
 
-    match market.get_price(crypto_name) {
+    tokio::task::spawn_blocking(move || match market.get_price(crypto_name) {
         Ok(symbol_price) => Ok(symbol_price.price),
         Err(err) => Err(anyhow::anyhow!(
             "Error, while parsing crypto price: {:?}",
             err
         )),
-    }
+    })
+    .await?
 }
 
 #[tokio::main]
